@@ -1,3 +1,16 @@
+/*
+ * Tareas TC1031.
+ * Programación de estructuras de datos y algoritmos fundamentales
+ * Profesor: Benjamín Valdés Aguirre.
+ * Nombre: Emanuel Josué Vega González.
+ * ID: A01710366.
+ * 
+ * Tarea 1: Funciones iterativas y recursivas
+ */
+
+#ifndef FUNCIONES_H
+#define FUNCIONES_H
+
 class Funciones{
     public:
     int sumaIterativa(int num){
@@ -21,3 +34,5 @@ class Funciones{
     }
 
 };
+
+#endif
