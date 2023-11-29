@@ -74,7 +74,7 @@ Node<T>* Node<T>::add(T val) {
 			return right;
 		}
 	}
-
+	return 0;
 }
 
 template <class T>
@@ -100,34 +100,46 @@ Node<T>* Node<T>::find(T val) {
 template <class T>
 Node<T>* Node<T>::succesor() {
 	Node<T> *le, *ri;
-
 	le = left;
 	ri = right;
-
-	if (left == 0) {
-		if (right != 0) {
-			right = 0;
+	if (right == 0) {
+		if (left != 0) {
+			left = 0;
 		}
-		return ri;
-	}
-
-	if (left->right == 0) {
-		left = left->left;
-		le->left = 0;
+		if (le)
+			le->parent = 0;
 		return le;
 	}
-	Node<T> *parent, *child;
-	parent = left;
-	child = left->right;
-
-	while (child->right != 0) {
-		parent = child;
-		child = child->right;
+	if (right->left == 0) {
+		right = right->right;
+		if (right)
+			right->parent = parent;
+		if (ri) {
+			ri->left = le;
+			if (ri->left)
+				ri->left->parent = ri;
+		}
+		if (ri->right)
+			ri->right->parent = ri;
+		return ri;
 	}
-
-	parent->right = child->left;
-	child->left = 0;
-	return child;
+	Node<T> *p, *c;
+	p = right;
+	c = right->left;
+	while (c->left != 0) {
+		p = c;
+		c = c->left;
+	}
+	p->left = c->right;
+	if (p->left != 0)
+		p->left->parent = p;
+	c->right = ri;
+	if (c->right != 0)
+		c->right->parent = c;
+	c->left = le;
+	if (c->left != 0)
+		c->left->parent = c;
+	return c;
 }
 
 template <class T>
