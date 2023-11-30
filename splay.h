@@ -100,51 +100,31 @@ Node<T>* Node<T>::find(T val) {
 template <class T>
 Node<T>* Node<T>::succesor() {
 	Node<T> *le, *ri;
+
 	le = left;
 	ri = right;
-	if (right == 0) {
-		if (left != 0) {
-			left = 0;
-		}
-		if (le)
-			le->parent = 0;
-		return le;
-	}
+
 	if (right->left == 0) {
 		right = right->right;
-		if (right)
-			right->parent = parent;
-		if (ri) {
-			ri->left = le;
-			if (ri->left)
-				ri->left->parent = ri;
-		}
-		if (ri->right)
-			ri->right->parent = ri;
+		ri->right = 0;
 		return ri;
 	}
-	Node<T> *p, *c;
-	p = right;
-	c = right->left;
-	while (c->left != 0) {
-		p = c;
-		c = c->left;
+
+	Node<T> *parent, *child;
+	parent = right;
+	child = right->left;
+	while (child->left != 0) {
+		parent = child;
+		child = child->left;
 	}
-	p->left = c->right;
-	if (p->left != 0)
-		p->left->parent = p;
-	c->right = ri;
-	if (c->right != 0)
-		c->right->parent = c;
-	c->left = le;
-	if (c->left != 0)
-		c->left->parent = c;
-	return c;
+	parent->left = child->right;
+	child->right = 0;
+	return child;
 }
 
 template <class T>
 Node<T>* Node<T>::remove(T val) {
-    Node<T> *succ, *old;
+	Node<T> *succ, *old;
 	if (val < value) {
 		if (left != 0) {
 			if (left->value == val) {
@@ -359,13 +339,26 @@ void SplayTree<T>::add(T val) {
 }
 
 template <class T>
-void SplayTree<T>::remove(T val) {
-    if (root != 0) {
-        root = root->remove(val);  // Actualiza el árbol después de eliminar el nodo
-        if (root) {
-            root = root->splay(root, root);
-        }
-    }
+void SplayTree<T>::remove(T val){
+	if (root != 0) {
+		if (val == root->value) {
+			Node<T> *succ = root->succesor();
+			if (succ != 0) {
+				succ->left = root->left;
+				succ->right = root->right;
+				succ->parent = 0;
+				if (succ->left)
+					succ->left->parent = succ;
+				if (succ->right)
+					succ->right->parent = succ;
+			}
+			delete root;
+			root = succ;
+		} else {
+			Node<T>* p = root->remove(val);
+			root = root->splay(root,p);
+		}
+	}
 }
 
 template <class T>
